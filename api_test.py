@@ -5,7 +5,7 @@ url = "http://localhost:3000/api/tasks"
 
 
 data = {
-    "task": "Deploy API",
+    "task": "learn spanish",
     "priority": "high"
 }
 

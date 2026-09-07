@@ -2,20 +2,24 @@ import requests
 import json
 
 
-# Function to create a task
+# Function that sends the task to our backend API
 def create_task(task, priority, due_date):
-    print("\n✅ Creating task...")
 
-    print("Task:", task)
-    print("Priority:", priority)
-    print("Due date:", due_date)
+    url = "http://localhost:3000/api/tasks"
 
-    return {
-        "status": "created",
-        "task": task,
-        "priority": priority,
-        "due_date": due_date
+    data = {
+        "task": task
     }
+
+    response = requests.post(url, json=data)
+
+    print("\nAPI Status:")
+    print(response.status_code)
+
+    print("\nAPI Response:")
+    print(response.text)
+
+    return response
 
 
 # Ollama API endpoint
@@ -59,11 +63,11 @@ Never add explanations.
 response = requests.post(url, json=data)
 
 
-# Convert Ollama's response from JSON into a Python dictionary
+# Convert Ollama response into Python dictionary
 result = response.json()
 
 
-# Get the AI's actual text response
+# Get AI's actual response
 ai_text = result["message"]["content"]
 
 
@@ -71,7 +75,7 @@ print("AI response:")
 print(ai_text)
 
 
-# Convert AI's JSON text into a Python dictionary
+# Convert AI JSON text into Python dictionary
 task_data = json.loads(ai_text)
 
 
@@ -79,7 +83,7 @@ print("\nPython object:")
 print(task_data)
 
 
-# Read individual values from the Python dictionary
+# Read AI's decision
 print("\nAction:")
 print(task_data["action"])
 
@@ -93,7 +97,7 @@ print("Due date:")
 print(task_data["due_date"])
 
 
-# Decide what Python should do
+# Execute the requested action
 if task_data["action"] == "create_task":
 
     result = create_task(
@@ -103,4 +107,4 @@ if task_data["action"] == "create_task":
     )
 
     print("\nFinal result:")
-    print(result)
+    print(result.text)
