@@ -2,6 +2,10 @@ import requests
 import json
 
 
+# Get request from the user
+user_request = input("🤖 What would you like me to do? ")
+
+
 # Function that sends the task to our backend API
 def create_task(task, priority, due_date):
 
@@ -51,7 +55,7 @@ Never add explanations.
 
         {
             "role": "user",
-            "content": "Create a high priority task called Deploy API for tomorrow."
+            "content": user_request
         }
     ],
 
@@ -71,7 +75,7 @@ result = response.json()
 ai_text = result["message"]["content"]
 
 
-print("AI response:")
+print("\nAI response:")
 print(ai_text)
 
 
