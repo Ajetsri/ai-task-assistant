@@ -25,6 +25,32 @@ def create_task(task, priority, due_date):
 
     return response
 
+#get task
+def get_tasks():
+
+    url = "http://localhost:3000/api/tasks"
+    response = requests.get(url)
+
+    print("\nAPI Status:")
+    print(response.status_code)
+
+    print("\nAPI Response:")
+    print(response.text)
+
+    return response
+#complete status change
+def complete_task(task_id):
+    url=f"http://localhost:3000/api/tasks/{task_id}"
+    data = {
+        "completed": True
+    }
+
+    response = requests.patch(url, json=data)
+    print("\nAPI Status:")
+    print(response.status_code)
+    print("\nAPI Response:")
+    print(response.text)
+    return response
 
 # Ollama API endpoint
 url = "http://localhost:11434/api/chat"
@@ -40,7 +66,13 @@ data = {
             "content": """
 You convert user requests into JSON.
 
-Return ONLY valid JSON in exactly this format:
+You can choose one of these actions:
+
+1. create_task
+2. get_tasks
+3. complete_task
+
+For create_task, return:
 
 {
     "action": "create_task",
@@ -49,6 +81,20 @@ Return ONLY valid JSON in exactly this format:
     "due_date": "date"
 }
 
+For get_tasks, return:
+
+{
+    "action": "get_tasks"
+}
+
+For complete_task, return:
+
+{
+    "action": "complete_task",
+    "task": "task name"
+}
+
+Return ONLY valid JSON.
 Never add explanations.
 """
         },
@@ -78,6 +124,9 @@ ai_text = result["message"]["content"]
 print("\nAI response:")
 print(ai_text)
 
+ai_text = ai_text.replace("```json", "")
+ai_text = ai_text.replace("```", "")
+ai_text = ai_text.strip()
 
 # Convert AI JSON text into Python dictionary
 task_data = json.loads(ai_text)
@@ -91,18 +140,18 @@ print(task_data)
 print("\nAction:")
 print(task_data["action"])
 
-print("Task:")
-print(task_data["task"])
-
-print("Priority:")
-print(task_data["priority"])
-
-print("Due date:")
-print(task_data["due_date"])
-
 
 # Execute the requested action
 if task_data["action"] == "create_task":
+
+    print("Task:")
+    print(task_data["task"])
+
+    print("Priority:")
+    print(task_data["priority"])
+
+    print("Due date:")
+    print(task_data["due_date"])
 
     result = create_task(
         task_data["task"],
@@ -112,3 +161,14 @@ if task_data["action"] == "create_task":
 
     print("\nFinal result:")
     print(result.text)
+
+
+elif task_data["action"] == "get_tasks":
+
+    result = get_tasks()
+
+    print("\nFinal result:")
+    print(result.text)
+elif task_data["action"] =="complete_task":
+    print("Task to complete:")
+    print(task_data["task"])
