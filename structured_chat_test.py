@@ -38,6 +38,32 @@ def get_tasks():
     print(response.text)
 
     return response
+
+# Find a task's MongoDB ID using its task name
+def find_task_id(task_name):
+
+    url = "http://localhost:3000/api/tasks"
+
+    response = requests.get(url)
+
+    print("\nSearching for task:")
+    print(task_name)
+
+    tasks = response.json()["data"]
+
+    for task in tasks:
+
+        if task["task"].lower() == task_name.lower():
+
+            print("\nTask found!")
+            print("Task ID:")
+            print(task["_id"])
+
+            return task["_id"]
+
+    print("\nTask not found.")
+
+    return None
 #complete status change
 def complete_task(task_id):
     url=f"http://localhost:3000/api/tasks/{task_id}"
@@ -180,6 +206,16 @@ elif task_data["action"] == "get_tasks":
 
     print("\nFinal result:")
     print(result.text)
-elif task_data["action"] =="complete_task":
+elif task_data["action"] == "complete_task":
+
     print("Task to complete:")
     print(task_data["task"])
+
+    task_id = find_task_id(task_data["task"])
+
+    if task_id:
+
+        result = complete_task(task_id)
+
+        print("\nFinal result:")
+        print(result.text)
