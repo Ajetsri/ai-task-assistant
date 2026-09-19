@@ -71,8 +71,17 @@ def complete_task(task_id):
         "completed": True
     }
 
-    response = requests.patch(url, json=data)
+    response = requests.put(url, json=data)
     print("\nAPI Status:")
+    print(response.status_code)
+    print("\nAPI Response:")
+    print(response.text)
+    return response
+#delete a task
+def delete_task(task_id):
+    url = f"http://localhost:3000/api/tasks/{task_id}"
+    response=requests.delete(url)
+    print("\n API Status:")
     print(response.status_code)
     print("\nAPI Response:")
     print(response.text)
@@ -99,6 +108,7 @@ Available actions:
 1. create_task
 2. get_tasks
 3. complete_task
+4.delete_task
 
 IMPORTANT RULES:
 
@@ -111,6 +121,7 @@ IMPORTANT RULES:
 - Do NOT return tasks from examples.
 - Return ONLY valid JSON.
 - Never add explanations.
+- If the user asks to delete, remove, or permanently delete a task, use delete_task.
 
 For create_task, return:
 
@@ -133,6 +144,11 @@ For complete_task, return:
     "action": "complete_task",
     "task": "actual task name"
 }
+for delete_task, return:
+    {
+    "action":"delete_task",
+    "task":"actual task name"
+    }
 """
         },
 
@@ -219,3 +235,15 @@ elif task_data["action"] == "complete_task":
 
         print("\nFinal result:")
         print(result.text)
+    else:
+        print("\n Task not found")
+elif task_data["action"] == "delete_task":
+    print("Task to delete:")
+    print(task_data["task"])
+    task_id = find_task_id(task_data["task"])
+    if task_id:
+        result = delete_task(task_id)
+        print("\nFinal result:")
+        print(result.text)
+    else:
+        print("\n Task not found")
